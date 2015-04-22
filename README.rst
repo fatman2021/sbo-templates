@@ -4,7 +4,7 @@
     :target: https://travis-ci.org/dslackw/sbo-templates
 .. image:: https://landscape.io/github/dslackw/sbo-templates/master/landscape.png
     :target: https://landscape.io/github/dslackw/sbo-templates/master
-.. image:: https://img.shields.io/codacy/050af4c8f1574e29b7382dfc2635a1a4.svg
+.. image:: https://img.shields.io/codacy/d586be6aeca9468e85bd057262bffc8e.svg
     :target: https://www.codacy.com/public/dzlatanidis/sbo-templates/dashboard
 .. image:: https://img.shields.io/pypi/dm/sbo-templates.svg
     :target: https://pypi.python.org/pypi/sbo-templates
@@ -19,6 +19,7 @@
 
 .. contents:: Table of Contents:
 
+
 .. code-block:: bash
 
          _                 _                       _       _            
@@ -27,6 +28,42 @@
     \__ \ |_) | (_) |_____| ||  __/ | | | | | |_) | | (_| | ||  __/\__ \
     |___/_.__/ \___/       \__\___|_| |_| |_| .__/|_|\__,_|\__\___||___/
                                             |_|                         
+
+
+About
+-----
+
+sbo-templates create easy, fast and safe templates file where can use with 
+SlackBuilds scripts.
+
+Install
+-------
+
+.. code-block:: bash
+
+    $ pip install sbo-templates
+    
+    or
+
+    $ pip install sbo-templates-<version>.tar.gz
+
+
+Requirements
+------------
+
+- Requires Python 2.7 or later in the 2.x series. It has been tested with 
+  Python 2.7.
+
+- python2-pythondialog >= 3.2.2
+
+
+Usage
+-----
+
+Usage: sbo-templates <application>
+Optional arguments:
+  --help           display this help and exit
+  --version        print version and exit
 
 
 
