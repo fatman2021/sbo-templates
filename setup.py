@@ -36,7 +36,7 @@ from sbo_templates.__metadata__ import (
 
 setup(
     name=__prog__,
-    packages=["sbo-templates"],
+    packages=["sbo_templates"],
     scripts=["bin/sbo-templates"],
     version=__version__,
     description="SBo tool for managing templates.",
