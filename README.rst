@@ -33,7 +33,7 @@
 About
 -----
 
-sbo-templates create easy, fast and safe templates file where can use with 
+sbo-templates create easy, fast and safe templates files where can use with 
 SlackBuilds scripts.
 
 Install
@@ -41,7 +41,13 @@ Install
 
 .. code-block:: bash
 
-    $ pip install sbo-templates
+    $ tar xvf sbo-templates-<version>.tar.gz
+    $ cd sbo-templates-<version>
+    $ ./install.sh
+
+    or
+    
+    $ pip install sbo-templates --upgrade
     
     or
 
@@ -60,10 +66,14 @@ Requirements
 Usage
 -----
 
-Usage: sbo-templates <application>
-Optional arguments:
-  --help           display this help and exit
-  --version        print version and exit
+.. code-block:: bash
+
+    Usage: sbo-templates <application>
+
+    Optional arguments:
+      --help           display this help and exit
+      --version        print version and exit
 
 
-
+Screenshots
+-----------
