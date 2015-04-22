@@ -77,3 +77,17 @@ Usage
 
 Screenshots
 -----------
+
+.. image:: https://raw.githubusercontent.com/dslackw/images/master/sbo-templates/sbo-templates-1.png
+    :target: https://github.com/dslackw/sbo-templates
+
+.. image:: https://raw.githubusercontent.com/dslackw/images/master/sbo-templates/sbo-templates-2.png
+    :target: https://github.com/dslackw/sbo-templates
+
+.. image:: https://raw.githubusercontent.com/dslackw/images/master/sbo-templates/sbo-templates-3.png
+    :target: https://github.com/dslackw/sbo-templates
+
+.. image:: https://raw.githubusercontent.com/dslackw/images/master/sbo-templates/sbo-templates-4.png
+    :target: https://github.com/dslackw/sbo-templates
+
+
