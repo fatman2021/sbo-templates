@@ -5,6 +5,3 @@ __pycache__
 .pipy
 *.egg-info/
 .ropeproject/
-*.info
-*.desktop
-slack-desc
