@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 # main.py file is part of sbo-templates.
@@ -26,18 +26,53 @@ import os
 import sys
 import locale
 from dialog import Dialog
+from sbo_templates.__metadata__ import __version__
 
 locale.setlocale(locale.LC_ALL, '')
 
 
 class SBoTemplates(object):
-
+    """SlackBuild Templates Class
+    """
     def __init__(self):
         self.d = Dialog(dialog="dialog")
-        self.d.set_background_title("SlackBuild Templates")
+        self.d.set_background_title("SlackBuild.org Templates {0}".format(
+            __version__))
         self.args = sys.argv
         self.args.pop(0)
+        self.__cli()
         self.__templatesInit()
+
+    def __cli(self):
+        """command line interface
+        """
+        if len(self.args) > 1:
+            self.__usage()
+        elif len(self.args) == 1 and self.args[0] == "--help":
+            self.__usage()
+        elif len(self.args) == 1 and self.args[0] == "--version":
+            self.__version()
+        elif len(self.args) < 1:
+            self.args = ['application']
+
+    def __version(self):
+        """version info
+        """
+        print("Version: {0}".format(__version__))
+        sys.exit(0)
+
+    def __usage(self):
+        """optional arguments
+        """
+        args = [
+            "Usage: sbo-templates <application>",
+            "Optional arguments:",
+            "  --help           display this help and exit",
+            "  --version        print version and exit",
+        ]
+        for opt in args:
+            print("{0}".format(opt))
+        sys.exit(0)
 
     def __templatesInit(self):
         """Initialiazation templates data
@@ -121,8 +156,9 @@ class SBoTemplates(object):
              attributes)
         ]
         self.mixedform()
-        self.maintainer = self.fields[0]
-        self.email = self.fields[1]
+        if self.fields:
+            self.maintainer = self.fields[0]
+            self.email = self.fields[1]
         for item, line in zip(text, self.fields):
             self.data.append(item + line)
         self.choose()
