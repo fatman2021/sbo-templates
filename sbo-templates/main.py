@@ -53,7 +53,7 @@ class SBoTemplates(object):
         self.maintainer = ""
         self.email = ""
         self.HOME = os.getenv("HOME") + "/"
-        self.filename = "{0}.maintainer".format(self.HOME)
+        self.filename = "{0}.sbo-maintainer".format(self.HOME)
         self.__maintainerInit()
         self.choises = [
             ("1 Info", "Create {0}.info file".format(self.app)),
@@ -107,7 +107,7 @@ class SBoTemplates(object):
     def maintainerData(self):
         """Maintainer data handler
         """
-        self.filename = "{0}.maintainer".format(self.HOME)
+        self.filename = "{0}.sbo-maintainer".format(self.HOME)
         self.comments = self.filename
         self.width = 90
         field_length = 90
@@ -270,6 +270,8 @@ class SBoTemplates(object):
         """
         if self.code == self.d.OK:
             self.write()
+            self.msg = "File {0} is created.".format(self.filename)
+            self.messageBox()
             self.__templatesInit()  # reset all data after write
             self.menu()
         elif self.code == self.d.CANCEL:
@@ -284,5 +286,10 @@ class SBoTemplates(object):
             for line in self.data:
                 f.write(line + "\n")
 
-SBoTemplates().menu()
-sys.exit(0)
+
+def main():
+
+    SBoTemplates().menu()
+
+if __name__ == "__main__":
+    main()
