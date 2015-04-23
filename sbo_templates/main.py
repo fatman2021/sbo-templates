@@ -65,7 +65,7 @@ class SBoTemplates(object):
         """optional arguments
         """
         args = [
-            "Usage: sbo-templates <application>",
+            "Usage: sbo-templates <application>\n",
             "Optional arguments:",
             "  --help           display this help and exit",
             "  --version        print version and exit",
@@ -311,8 +311,10 @@ class SBoTemplates(object):
             self.__templatesInit()  # reset all data after write
             self.menu()
         elif self.code == self.d.CANCEL:
+            self.__templatesInit()  # reset all data after browse
             self.menu()
         elif self.code == self.d.ESC:
+            self.__templatesInit()  # reset all data after browse
             self.menu()
 
     def write(self):
