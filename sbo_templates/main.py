@@ -26,7 +26,7 @@ import os
 import sys
 import locale
 from dialog import Dialog
-from sbo_templates.__metadata__ import __version__
+from __metadata__ import __version__
 
 locale.setlocale(locale.LC_ALL, '')
 
