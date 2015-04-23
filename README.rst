@@ -81,13 +81,22 @@ Screenshots
 .. image:: https://raw.githubusercontent.com/dslackw/images/master/sbo-templates/sbo-templates-1.png
     :target: https://github.com/dslackw/sbo-templates
 
+
 .. image:: https://raw.githubusercontent.com/dslackw/images/master/sbo-templates/sbo-templates-2.png
     :target: https://github.com/dslackw/sbo-templates
 
+
 .. image:: https://raw.githubusercontent.com/dslackw/images/master/sbo-templates/sbo-templates-3.png
     :target: https://github.com/dslackw/sbo-templates
+
 
 .. image:: https://raw.githubusercontent.com/dslackw/images/master/sbo-templates/sbo-templates-4.png
     :target: https://github.com/dslackw/sbo-templates
 
 
+Copyright 
+---------
+
+- Copyright © Dimitris Zlatanidis
+- Slackware® is a Registered Trademark of Patrick Volkerding.
+- Linux is a Registered Trademark of Linus Torvalds.
