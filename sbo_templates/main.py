@@ -40,7 +40,7 @@ class SBoTemplates(object):
             __version__))
         self.args = sys.argv
         self.args.pop(0)
-        self.pwd = os.getcwd() + "/"
+        self.pwd = ""
         self.__cli()
         self.__templatesInit()
 
@@ -96,6 +96,7 @@ class SBoTemplates(object):
             ("2 Slack desc", "Create slack-desc file"),
             ("3 Desktop", "Create {0}.desktop file".format(self.app)),
             ("4 Maintainer", "Maintainer data"),
+            ("5 Directory", "Change directory"),
             ("0 Exit", "Exit the program")
         ]
 
@@ -131,6 +132,32 @@ class SBoTemplates(object):
             self.desktopFile()
         elif tag[0] == "4":
             self.maintainerData()
+        elif tag[0] == "5":
+            self.__updateDirectory()
+
+    def __updateDirectory(self):
+        """update working direcroty
+        """
+        chache_height = self.height
+        self.height = 10
+        self.comments = "Current directory: {0}".format(self.pwd)
+        self.width = 90
+        field_length = 90
+        input_length = 90
+        attributes = '0x0'
+        self.elements = [
+            ("Directory=", 1, 1, "", 1, 11, field_length, input_length,
+             attributes),
+        ]
+        self.mixedform()
+        self.height = chache_height
+        if self.fields:
+            self.pwd = self.fields[0]
+            if not self.pwd.endswith("/"):
+                self.pwd = self.pwd + "/"
+            self.msg = "Current directory: {0}".format(self.pwd)
+            self.messageBox()
+        self.menu()
 
     def mixedform(self):
         """Dialog.mixedform(text, elements, height=0, width=0, form_height=0,
@@ -143,7 +170,10 @@ class SBoTemplates(object):
     def maintainerData(self):
         """Maintainer data handler
         """
+        chache_dir = self.pwd
+        self.pwd = ""
         self.filename = "{0}.sbo-maintainer".format(self.HOME)
+        print self.pwd
         self.comments = self.filename
         self.width = 90
         field_length = 90
@@ -163,6 +193,8 @@ class SBoTemplates(object):
         for item, line in zip(text, self.fields):
             self.data.append(item + line)
         self.choose()
+        self.pwd = chache_dir
+        print self.pwd
 
     def __slackDescComments(self):
         """slack-desc file comments
@@ -312,7 +344,7 @@ class SBoTemplates(object):
     def write(self):
         """write handler
         """
-        with open(self.filename, "w") as f:
+        with open(self.pwd + self.filename, "w") as f:
             for line in self.data:
                 f.write(line + "\n")
 
