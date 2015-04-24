@@ -40,6 +40,7 @@ class SBoTemplates(object):
             __version__))
         self.args = sys.argv
         self.args.pop(0)
+        self.pwd = os.getcwd() + "/"
         self.__cli()
         self.__templatesInit()
 
@@ -280,14 +281,16 @@ class SBoTemplates(object):
         self.choose()
 
     def messageBox(self):
+        """view messages
+        """
         self.d.msgbox(self.msg, width=50, height=7)
 
     def choose(self):
         """Choosing if write to file or exit
         """
         if self.code == self.d.OK:
+            self.__ifFileExist()
             self.write()
-            self.msg = "File {0} is created.".format(self.filename)
             self.messageBox()
             self.__templatesInit()  # reset all data after write
             self.menu()
@@ -297,6 +300,14 @@ class SBoTemplates(object):
         elif self.code == self.d.ESC:
             self.__templatesInit()  # reset all data after browse
             self.menu()
+
+    def __ifFileExist(self):
+        """check if file exist
+        """
+        if os.path.isfile(self.pwd + self.filename):
+            self.msg = "File {0} modified.".format(self.filename)
+        else:
+            self.msg = "File {0} is created.".format(self.filename)
 
     def write(self):
         """write handler
