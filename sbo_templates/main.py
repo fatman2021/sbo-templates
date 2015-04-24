@@ -152,11 +152,11 @@ class SBoTemplates(object):
         self.mixedform()
         self.height = chache_height
         if self.fields:
-            self.pwd = self.fields[0]
-            if not self.pwd.endswith("/"):
+            self.pwd = self.fields[0].strip()
+            if self.pwd and not self.pwd.endswith("/"):
                 self.pwd = self.pwd + "/"
-            self.msg = "Current directory: {0}".format(self.pwd)
-            self.messageBox()
+        self.msg = "Current directory: {0}".format(self.pwd)
+        self.messageBox()
         self.menu()
 
     def mixedform(self):
