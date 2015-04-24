@@ -193,28 +193,12 @@ class SBoTemplates(object):
         attributes = '0x0'
         self.elements = [
             ("{0}:".format(self.app), 1, 1, ' {0} ()'.format(self.app), 1,
-             len(self.app) + 2, field_length, input_length, attributes),
-            ("{0}:".format(self.app), 2, 1, '', 2, len(self.app) + 2,
-             field_length, input_length, attributes),
-            ("{0}:".format(self.app), 3, 1, '', 3, len(self.app) + 2,
-             field_length, input_length, attributes),
-            ("{0}:".format(self.app), 4, 1, '', 4, len(self.app) + 2,
-             field_length, input_length, attributes),
-            ("{0}:".format(self.app), 5, 1, '', 5, len(self.app) + 2,
-             field_length, input_length, attributes),
-            ("{0}:".format(self.app), 6, 1, '', 6, len(self.app) + 2,
-             field_length, input_length, attributes),
-            ("{0}:".format(self.app), 7, 1, '', 7, len(self.app) + 2,
-             field_length, input_length, attributes),
-            ("{0}:".format(self.app), 8, 1, '', 8, len(self.app) + 2,
-             field_length, input_length, attributes),
-            ("{0}:".format(self.app), 9, 1, '', 9, len(self.app) + 2,
-             field_length, input_length, attributes),
-            ("{0}:".format(self.app), 10, 1, '', 10, len(self.app) + 2,
-             field_length, input_length, attributes),
-            ("{0}:".format(self.app), 11, 1, '', 11, len(self.app) + 2,
-             field_length, input_length, attributes)
+             len(self.app) + 2, field_length, input_length, attributes)
         ]
+        for i in range(2, 12):
+            self.elements += [("{0}:".format(self.app), i, 1, '', i,
+                               len(self.app) + 2, field_length, input_length,
+                               attributes)]
         self.mixedform()
         self.handy_ruler = 0
         self.__slackDescComments()
