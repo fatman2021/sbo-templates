@@ -36,6 +36,14 @@ About
 sbo-templates create easy, fast and safe templates files where can use with 
 SlackBuilds scripts.
 
+Features
+--------
+
+- Create fast and safe templates.
+- Read templates online from slackbuilds.org.
+- Reading existing files for editing.
+- Repairs wrong tamplates.
+
 Install
 -------
 
