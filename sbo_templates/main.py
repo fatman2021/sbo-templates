@@ -96,10 +96,11 @@ class SBoTemplates(object):
             ("1 Info", "Create {0}.info file".format(self.app)),
             ("2 Slack desc", "Create slack-desc file"),
             ("3 Desktop", "Create {0}.desktop file".format(self.app)),
-            ("4 Maintainer", "Maintainer data"),
-            ("5 Directory", "Change directory"),
-            ("6 Help", "Where to get help"),
-            ("7 Test", "Test"),
+            ("4 Doinst.sh", "Create doinst.sh script"),
+            ("5 README", "Create README file"),
+            ("6 Maintainer", "Maintainer data"),
+            ("7 Directory", "Change directory"),
+            ("8 Help", "Where to get help"),
             ("0 Exit", "Exit the program")
         ]
 
@@ -135,13 +136,15 @@ class SBoTemplates(object):
         elif tag[0] == "3":
             self.desktopFile()
         elif tag[0] == "4":
-            self.maintainerData()
-        elif tag[0] == "5":
-            self.__updateDirectory()
-        elif tag[0] == "6":
-            self.getHelp()
-        elif tag[0] == "7":
             self.doinst_sh()
+        elif tag[0] == "5":
+            self.README()
+        elif tag[0] == "6":
+            self.maintainerData()
+        elif tag[0] == "7":
+            self.__updateDirectory()
+        elif tag[0] == "8":
+            self.getHelp()
 
     def getHelp(self):
         """get help from slackbuilds.org
@@ -175,14 +178,6 @@ class SBoTemplates(object):
             self.msg = "Current directory: {0}".format(self.pwd)
             self.messageBox()
         self.menu()
-
-    def mixedform(self):
-        """Dialog.mixedform(text, elements, height=0, width=0, form_height=0,
-        **kwargs)
-        Display a form consisting of labels and fields.
-        """
-        self.code, self.fields = self.d.mixedform(self.comments, self.elements,
-                                                  self.height, self.width)
 
     def maintainerData(self):
         """Maintainer data handler
@@ -337,14 +332,37 @@ class SBoTemplates(object):
         self.filename = "doinst.sh"
         if not os.path.isfile(self.pwd + self.filename):
             self.touch()
-        code, text = self.d.editbox(self.filename, height=30, width=90,
-                                    title=self.filename)
+        self.code, text = self.d.editbox(self.filename, height=30, width=90,
+                                         title=self.filename)
+        text = text.rstrip()
         if text:
             self.data = text.splitlines()
-            self.write()
             self.d.scrollbox(text, height=len(self.data), width=0,
-                             title=self.filename)
-        self.menu()
+                             title="PREVIEW: {0}".format(self.filename))
+        self.choose()
+
+    def README(self):
+        """README handler file
+        """
+        self.filename = "README"
+        if not os.path.isfile(self.pwd + self.filename):
+            self.touch()
+        self.code, text = self.d.editbox(self.filename, height=30, width=90,
+                                         title=self.filename)
+        text = text.rstrip()
+        if text:
+            self.data = text.splitlines()
+            self.d.scrollbox(text, height=len(self.data), width=0,
+                             title="PREVIEW: {0}".format(self.filename))
+        self.choose()
+
+    def mixedform(self):
+        """Dialog.mixedform(text, elements, height=0, width=0, form_height=0,
+        **kwargs)
+        Display a form consisting of labels and fields.
+        """
+        self.code, self.fields = self.d.mixedform(self.comments, self.elements,
+                                                  self.height, self.width)
 
     def messageBox(self):
         """view messages
