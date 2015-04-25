@@ -42,6 +42,7 @@ class SBoTemplates(object):
             __version__))
         self.args = sys.argv
         self.args.pop(0)
+        self.slack_desc_text = []
         self.pwd = ""
         self.__cli()
 
@@ -250,7 +251,10 @@ class SBoTemplates(object):
         for line in self.comments.splitlines():
             self.data.append(line)
         for line in self.fields:
+            if line:
+                self.slack_desc_text.append("{0}".format(line.strip()))
             self.data.append("{0}:{1}".format(self.app, line))
+        self.slack_desc_text = self.slack_desc_text[1:]
         self.choose()
 
     def infoFile(self):
@@ -334,7 +338,7 @@ class SBoTemplates(object):
             self.touch()
         self.code, text = self.d.editbox(self.filename, height=30, width=90,
                                          title=self.filename)
-        text = text.rstrip()
+        text = text.strip()
         if text:
             self.data = text.splitlines()
             self.d.scrollbox(text, height=len(self.data), width=0,
@@ -345,11 +349,19 @@ class SBoTemplates(object):
         """README handler file
         """
         self.filename = "README"
-        if not os.path.isfile(self.pwd + self.filename):
+        if self.slack_desc_text:
+            yesno = self.d.yesno("Import text from slack-desc file ?")
+            if yesno == "ok":
+                self.data = self.slack_desc_text
+                self.write()
+            else:
+                self.touch()
+        elif not os.path.isfile(self.pwd + self.filename):
             self.touch()
+
         self.code, text = self.d.editbox(self.filename, height=30, width=90,
                                          title=self.filename)
-        text = text.rstrip()
+        text = text.strip()
         if text:
             self.data = text.splitlines()
             self.d.scrollbox(text, height=len(self.data), width=0,
