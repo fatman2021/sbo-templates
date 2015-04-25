@@ -23,28 +23,33 @@
 
 import urllib2
 
-bg = "\x1b[48;5;4m"
-fg = "\x1b[38;5;7m"
-cl = bg + fg
 
-try:
-    doinst_sh = urllib2.urlopen("http://slackbuilds.org/templates/doinst.sh")
-    doinst = doinst_sh.read()
-except urllib2.URLError as err:
-    doinst = str(err)
-doinst_begin = [
-    cl + "#####################################################################"
-    "##########",
-    cl + "#             COPY A TEMPLATE AND PASTE IT INTO THE TEXT EDITOR      "
-    "         #",
-    cl + "#                          PRESS \"q or Q\" TO EXIT                  "
-    "           #",
-    cl + "#####################################################################"
-    "##########",
-    cl + ""
-]
-doinst_end = [
-    cl + "#####################################################################"
-    "##########",
-]
-doinst_sh_template = doinst_begin + doinst.splitlines() + doinst_end
+class Templates(object):
+
+    def __init__(self):
+        self.bg = "\x1b[48;5;4m"
+        self.fg = "\x1b[38;5;7m"
+        self.cl = self.bg + self.fg
+
+    def doinst_sh(self):
+        try:
+            url = urllib2.urlopen("http://slackbuilds.org/templates/doinst.sh")
+            doinst = url.read()
+        except urllib2.URLError as err:
+            doinst = str(err)
+        doinst_begin = [
+            self.cl + "#######################################################"
+            "########################",
+            self.cl + "#             COPY A TEMPLATE AND PASTE IT INTO THE TEX"
+            "T EDITOR               #",
+            self.cl + "#                          PRESS \"q or Q\" TO EXIT    "
+            "                         #",
+            self.cl + "#######################################################"
+            "########################",
+            self.cl + ""
+        ]
+        doinst_end = [
+            self.cl + "#######################################################"
+            "########################",
+        ]
+        return doinst_begin + doinst.splitlines() + doinst_end
