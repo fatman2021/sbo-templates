@@ -62,7 +62,7 @@ class SBoTemplates(object):
         self._name = self.args[0]
         self._comment = ""
         self._exec = "/usr/bin/{0}".format(self.args[0])
-        self._icon = "/usr/share/pixmaps/{0}".format(self.args[0])
+        self._icon = "/usr/share/pixmaps/{0}.png".format(self.args[0])
         self._terminal = "false"
         self._type = ""
         self._categories = ""
