@@ -299,6 +299,7 @@ class SBoTemplates(object):
         """
         self.filename = "{0}.info".format(self.app)
         self.width = 90
+        self.height = 20
         self.comments = self.filename
         field_length = 90
         input_length = 90
