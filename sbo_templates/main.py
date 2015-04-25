@@ -24,9 +24,11 @@
 from __future__ import unicode_literals
 import os
 import sys
+import pydoc
 import locale
 from dialog import Dialog
 from __metadata__ import __version__
+from templates import doinst_sh_template
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -42,7 +44,6 @@ class SBoTemplates(object):
         self.args.pop(0)
         self.pwd = ""
         self.__cli()
-        self.__templatesInit()
 
     def __cli(self):
         """command line interface
@@ -97,6 +98,8 @@ class SBoTemplates(object):
             ("3 Desktop", "Create {0}.desktop file".format(self.app)),
             ("4 Maintainer", "Maintainer data"),
             ("5 Directory", "Change directory"),
+            ("6 Help", "Where to get help"),
+            ("7 Test", "Test"),
             ("0 Exit", "Exit the program")
         ]
 
@@ -117,6 +120,7 @@ class SBoTemplates(object):
         choices=[], **kwargs)
         Display a menu dialog box.
         """
+        self.__templatesInit()  # reset all data
         code, tag = self.d.menu("Choose an option or press ESC or <Cancel> to "
                                 "Exit.", height=15, width=70,
                                 menu_height=len(self.choises),
@@ -134,14 +138,26 @@ class SBoTemplates(object):
             self.maintainerData()
         elif tag[0] == "5":
             self.__updateDirectory()
+        elif tag[0] == "6":
+            self.getHelp()
+        elif tag[0] == "7":
+            self.doinst_sh()
+
+    def getHelp(self):
+        """get help from slackbuilds.org
+        """
+        self.msg = ("For additional assistance, visit: http://www.slackbuilds."
+                    "org/guidelines/")
+        self.width = len(self.msg) + 4
+        self.height = 7
+        self.messageBox()
+        self.menu()
 
     def __updateDirectory(self):
         """update working direcroty
         """
-        chache_height = self.height
         self.height = 10
         self.comments = "Current directory: {0}".format(self.pwd)
-        self.width = 90
         field_length = 90
         input_length = 90
         attributes = '0x0'
@@ -150,11 +166,12 @@ class SBoTemplates(object):
              attributes),
         ]
         self.mixedform()
-        self.height = chache_height
         if self.fields:
             self.pwd = self.fields[0].strip()
             if self.pwd and not self.pwd.endswith("/"):
                 self.pwd = self.pwd + "/"
+            self.width = 60
+            self.height = 6
             self.msg = "Current directory: {0}".format(self.pwd)
             self.messageBox()
         self.menu()
@@ -170,7 +187,7 @@ class SBoTemplates(object):
     def maintainerData(self):
         """Maintainer data handler
         """
-        chache_dir = self.pwd
+        cache_dir = self.pwd
         self.pwd = ""
         self.filename = "{0}.sbo-maintainer".format(self.HOME)
         print self.pwd
@@ -193,7 +210,7 @@ class SBoTemplates(object):
         for item, line in zip(text, self.fields):
             self.data.append(item + line)
         self.choose()
-        self.pwd = chache_dir
+        self.pwd = cache_dir
         print self.pwd
 
     def __slackDescComments(self):
@@ -312,10 +329,27 @@ class SBoTemplates(object):
             self.data.append(item + line)
         self.choose()
 
+    def doinst_sh(self):
+        """doinst.sh handler file
+        """
+        temp = "\n".join(doinst_sh_template)
+        pydoc.pager(temp)
+        self.filename = "doinst.sh"
+        if not os.path.isfile(self.pwd + self.filename):
+            self.touch()
+        code, text = self.d.editbox(self.filename, height=30, width=90,
+                                    title=self.filename)
+        if text:
+            self.data = text.splitlines()
+            self.write()
+            self.d.scrollbox(text, height=len(self.data), width=0,
+                             title=self.filename)
+        self.menu()
+
     def messageBox(self):
         """view messages
         """
-        self.d.msgbox(self.msg, width=50, height=7)
+        self.d.msgbox(self.msg, self.height, self.width)
 
     def choose(self):
         """Choosing if write to file or exit
@@ -324,22 +358,27 @@ class SBoTemplates(object):
             self.__ifFileExist()
             self.write()
             self.messageBox()
-            self.__templatesInit()  # reset all data after write
             self.menu()
         elif self.code == self.d.CANCEL:
-            self.__templatesInit()  # reset all data after browse
             self.menu()
         elif self.code == self.d.ESC:
-            self.__templatesInit()  # reset all data after browse
             self.menu()
 
     def __ifFileExist(self):
         """check if file exist
         """
+        self.width = 60
+        self.height = 6
         if os.path.isfile(self.pwd + self.filename):
             self.msg = "File {0} modified.".format(self.filename)
         else:
             self.msg = "File {0} is created.".format(self.filename)
+
+    def touch(self):
+        """create empty file
+        """
+        with open(self.pwd + self.filename, "w") as f:
+            f.close()
 
     def write(self):
         """write handler
