@@ -334,8 +334,7 @@ class SBoTemplates(object):
         temp = "\n".join(doinst_sh_template)
         pydoc.pager(temp)
         self.filename = "doinst.sh"
-        if not os.path.isfile(self.pwd + self.filename):
-            self.touch()
+        self.touch()
         self.code, text = self.d.editbox(self.filename, height=30, width=90,
                                          title=self.filename)
         text = text.strip()
@@ -349,16 +348,14 @@ class SBoTemplates(object):
         """README handler file
         """
         self.filename = "README"
+        self.touch()
         if self.slack_desc_text:
-            yesno = self.d.yesno("Import text from slack-desc file ?")
+            yesno = self.d.yesno("Import text from <slack-desc> file ?")
             if yesno == "ok":
                 self.data = self.slack_desc_text
                 self.write()
             else:
                 self.touch()
-        elif not os.path.isfile(self.pwd + self.filename):
-            self.touch()
-
         self.code, text = self.d.editbox(self.filename, height=30, width=90,
                                          title=self.filename)
         text = text.strip()
