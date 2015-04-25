@@ -40,19 +40,31 @@ class SBoTemplates(object):
         self.d = Dialog(dialog="dialog")
         self.d.set_background_title("SlackBuild.org Templates {0}".format(
             __version__))
+
         self.args = sys.argv
         self.args.pop(0)
+        self.__cli()
+
+        self.pwd = ""
         self.slack_desc_text = []
         self.slack_desc_data = []
-        self.version = '""'
-        self.homepage = '""'
-        self.download = '""'
-        self.md5sum = '""'
-        self.download_x86_64 = '""'
-        self.md5sum_x86_64 = '""'
-        self.requires = '""'
-        self.pwd = ""
-        self.__cli()
+        # <application>.info
+        self._version = '""'
+        self._homepage = '""'
+        self._download = '""'
+        self._md5sum = '""'
+        self._download_x86_64 = '""'
+        self._md5sum_x86_64 = '""'
+        self._requires = '""'
+        # <application>.desktop
+        self._name = self.args[0]
+        self._comment = ""
+        self._exec = "/usr/bin/{0}".format(self.args[0])
+        self._icon = "/usr/share/pixmaps/{0}".format(self.args[0])
+        self._terminal = "false"
+        self._type = ""
+        self._categories = ""
+        self._genericname = ""
 
     def __cli(self):
         """command line interface
@@ -292,23 +304,23 @@ class SBoTemplates(object):
         text = ["PRGNAM=", "VERSION=", "HOMEPAGE=", "DOWNLOAD=", "MD5SUM=",
                 "DOWNLOAD_x86_64=", "MD5SUM_x86_64=", "REQUIRES=",
                 "MAINTAINER=", "EMAIL="]
-        self.__infoFileData(text)
+        self.__infoFileRead(text)
         self.elements = [
             (text[0], 1, 1, '"{0}"'.format(self.app), 1, 8, field_length,
              input_length, attributes),
-            (text[1], 2, 1, self.version, 2, 9, field_length, input_length,
+            (text[1], 2, 1, self._version, 2, 9, field_length, input_length,
              attributes),
-            (text[2], 3, 1, self.homepage, 3, 10, field_length * 4,
+            (text[2], 3, 1, self._homepage, 3, 10, field_length * 4,
              input_length * 4, attributes),
-            (text[3], 4, 1, self.download, 4, 10, field_length * 4,
+            (text[3], 4, 1, self._download, 4, 10, field_length * 4,
              input_length * 4, attributes),
-            (text[4], 5, 1, self.md5sum, 5, 8, field_length + 8,
+            (text[4], 5, 1, self._md5sum, 5, 8, field_length + 8,
              input_length + 8, attributes),
-            (text[5], 6, 1, self.download_x86_64, 6, 17, field_length * 4,
+            (text[5], 6, 1, self._download_x86_64, 6, 17, field_length * 4,
              input_length * 4, attributes),
-            (text[6], 7, 1, self.md5sum_x86_64, 7, 15, field_length * 4,
+            (text[6], 7, 1, self._md5sum_x86_64, 7, 15, field_length * 4,
              input_length * 4, attributes),
-            (text[7], 8, 1, self.requires, 8, 10, field_length * 4,
+            (text[7], 8, 1, self._requires, 8, 10, field_length * 4,
              input_length * 4, attributes),
             (text[8], 9, 1, '"{0}"'.format(self.maintainer), 9, 12,
              field_length, input_length, attributes),
@@ -317,18 +329,18 @@ class SBoTemplates(object):
         ]
         self.mixedform()
         if self.fields:
-            self.version = self.fields[1]
-            self.homepage = self.fields[2]
-            self.download = self.fields[3]
-            self.md5sum = self.fields[4]
-            self.download_x86_64 = self.fields[5]
-            self.md5sum_x86_64 = self.fields[6]
-            self.requires = self.fields[7]
+            self._version = self.fields[1]
+            self._homepage = self.fields[2]
+            self._download = self.fields[3]
+            self._md5sum = self.fields[4]
+            self._download_x86_64 = self.fields[5]
+            self._md5sum_x86_64 = self.fields[6]
+            self._requires = self.fields[7]
         for item, line in zip(text, self.fields):
             self.data.append(item + line)
         self.choose()
 
-    def __infoFileData(self, text):
+    def __infoFileRead(self, text):
         """read data for <application>.info file if exist
         """
         if os.path.isfile(self.pwd + self.filename):
@@ -361,26 +373,62 @@ class SBoTemplates(object):
         attributes = '0x0'
         text = ["[Desktop Entry]", "Name=", "Comment=", "Exec=", "Icon=",
                 "Terminal=", "Type=", "Categories=", "GenericName="]
+        self.__desktopFileRead(text)
         self.elements = [
             (text[0], 1, 1, '', 1, 1, field_length, input_length, 0x1),
-            (text[1], 2, 1, '{0}'.format(self.app), 2, 6, field_length,
+            (text[1], 2, 1, self._name, 2, 6, field_length,
              input_length, attributes),
-            (text[2], 3, 1, '', 3, 9, field_length, input_length, attributes),
-            (text[3], 4, 1, '/usr/bin/{0}'.format(self.app), 4, 6,
-             field_length, input_length, attributes),
-            (text[4], 5, 1, '/usr/share/pixmaps/{0}.png'.format(self.app), 5, 6,
-             field_length, input_length, attributes),
-            (text[5], 6, 1, 'false', 6, 10, field_length, input_length,
+            (text[2], 3, 1, self._comment, 3, 9, field_length, input_length,
              attributes),
-            (text[6], 7, 1, '', 7, 6, field_length, input_length, attributes),
-            (text[7], 8, 1, '', 8, 12, field_length, input_length, attributes),
-            (text[8], 9, 1, '', 9, 13, field_length, input_length,
+            (text[3], 4, 1, self._exec, 4, 6, field_length, input_length,
              attributes),
+            (text[4], 5, 1, self._icon, 5, 6, field_length, input_length,
+             attributes),
+            (text[5], 6, 1, self._terminal, 6, 10, field_length, input_length,
+             attributes),
+            (text[6], 7, 1, self._type, 7, 6, field_length, input_length,
+             attributes),
+            (text[7], 8, 1, self._categories, 8, 12, field_length, input_length,
+             attributes),
+            (text[8], 9, 1, self._genericname, 9, 13, field_length,
+             input_length, attributes),
         ]
         self.mixedform()
+        if self.fields:
+            self._name = self.fields[1]
+            self._comment = self.fields[2]
+            self._exec = self.fields[3]
+            self._icon = self.fields[4]
+            self._terminal = self.fields[5]
+            self._type = self.fields[6]
+            self._categories = self.fields[7]
+            self._genericname = self.fields[8]
         for item, line in zip(text, self.fields):
             self.data.append(item + line)
         self.choose()
+
+    def __desktopFileRead(self, text):
+        """read data for <application>.info file if exist
+        """
+        if os.path.isfile(self.pwd + self.filename):
+            with open(self.pwd + self.filename, "r") as info:
+                for line in info:
+                    if line.startswith(text[1]):
+                        self._name = line.split("=")[1].strip()
+                    if line.startswith(text[2]):
+                        self._comment = line.split("=")[1].strip()
+                    if line.startswith(text[3]):
+                        self._exec = line.split("=")[1].strip()
+                    if line.startswith(text[4]):
+                        self._icon = line.split("=")[1].strip()
+                    if line.startswith(text[5]):
+                        self._terminal = line.split("=")[1].strip()
+                    if line.startswith(text[6]):
+                        self._type = line.split("=")[1].strip()
+                    if line.startswith(text[7]):
+                        self._categories = line.split("=")[1].strip()
+                    if line.startswith(text[8]):
+                        self._genericname = line.split("=")[1].strip()
 
     def doinst_sh(self):
         """doinst.sh handler file
