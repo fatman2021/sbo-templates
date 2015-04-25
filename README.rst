@@ -41,8 +41,8 @@ Features
 
 - Create fast and safe templates.
 - Read templates online from slackbuilds.org.
-- Reading existing files for editing.
-- Repairs wrong tamplates.
+- Reading existing files templates for editing.
+- Repairs wrong templates.
 
 Install
 -------
