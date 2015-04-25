@@ -43,6 +43,14 @@ class SBoTemplates(object):
         self.args = sys.argv
         self.args.pop(0)
         self.slack_desc_text = []
+        self.slack_desc_data = []
+        self.version = '""'
+        self.homepage = '""'
+        self.download = '""'
+        self.md5sum = '""'
+        self.download_x86_64 = '""'
+        self.md5sum_x86_64 = '""'
+        self.requires = '""'
         self.pwd = ""
         self.__cli()
 
@@ -237,12 +245,13 @@ class SBoTemplates(object):
         field_length = 70
         input_length = 70
         attributes = '0x0'
+        self.__slackDeskRead()
         self.elements = [
             ("{0}:".format(self.app), 1, 1, ' {0} ()'.format(self.app), 1,
              len(self.app) + 2, field_length, input_length, attributes)
         ]
-        for i in range(2, 12):
-            self.elements += [("{0}:".format(self.app), i, 1, '', i,
+        for i, line in zip(range(2, 12), self.slack_desc_data):
+            self.elements += [("{0}:".format(self.app), i, 1, line, i,
                                len(self.app) + 2, field_length, input_length,
                                attributes)]
         self.mixedform()
@@ -257,6 +266,19 @@ class SBoTemplates(object):
         self.slack_desc_text = self.slack_desc_text[1:]
         self.choose()
 
+    def __slackDeskRead(self):
+        """grab slack-desc text if exist
+        """
+        line_count = 0
+        if os.path.isfile(self.pwd + self.filename):
+            with open(self.pwd + self.filename, "r") as info:
+                for line in info:
+                    line_count += 1
+                    if line_count > 8 and line_count < 20:
+                        self.slack_desc_data.append(
+                            line[len(self.app) + 1:].rstrip())
+        print self.slack_desc_data
+
     def infoFile(self):
         """<application>.info file handler
         """
@@ -269,32 +291,63 @@ class SBoTemplates(object):
         text = ["PRGNAM=", "VERSION=", "HOMEPAGE=", "DOWNLOAD=", "MD5SUM=",
                 "DOWNLOAD_x86_64=", "MD5SUM_x86_64=", "REQUIRES=",
                 "MAINTAINER=", "EMAIL="]
+        self.__infoFileData(text)
         self.elements = [
             (text[0], 1, 1, '"{0}"'.format(self.app), 1, 8, field_length,
              input_length, attributes),
-            (text[1], 2, 1, '""', 2, 9, field_length, input_length,
+            (text[1], 2, 1, self.version, 2, 9, field_length, input_length,
              attributes),
-            (text[2], 3, 1, '""', 3, 10, field_length * 4, input_length * 4,
-             attributes),
-            (text[3], 4, 1, '""', 4, 10, field_length * 4, input_length * 4,
-             attributes),
-            (text[4], 5, 1, '""', 5, 8, field_length + 8, input_length + 8,
-             attributes),
-            (text[5], 6, 1, '""', 6, 17, field_length * 4,
+            (text[2], 3, 1, self.homepage, 3, 10, field_length * 4,
              input_length * 4, attributes),
-            (text[6], 7, 1, '""', 7, 15, field_length * 4,
+            (text[3], 4, 1, self.download, 4, 10, field_length * 4,
              input_length * 4, attributes),
-            (text[7], 8, 1, '""', 8, 10, field_length * 4, input_length * 4,
-             attributes),
+            (text[4], 5, 1, self.md5sum, 5, 8, field_length + 8,
+             input_length + 8, attributes),
+            (text[5], 6, 1, self.download_x86_64, 6, 17, field_length * 4,
+             input_length * 4, attributes),
+            (text[6], 7, 1, self.md5sum_x86_64, 7, 15, field_length * 4,
+             input_length * 4, attributes),
+            (text[7], 8, 1, self.requires, 8, 10, field_length * 4,
+             input_length * 4, attributes),
             (text[8], 9, 1, '"{0}"'.format(self.maintainer), 9, 12,
              field_length, input_length, attributes),
             (text[9], 10, 1, '"{0}"'.format(self.email), 10, 7, field_length,
              input_length, attributes)
         ]
         self.mixedform()
+        if self.fields:
+            self.version = self.fields[1]
+            self.homepage = self.fields[2]
+            self.download = self.fields[3]
+            self.md5sum = self.fields[4]
+            self.download_x86_64 = self.fields[5]
+            self.md5sum_x86_64 = self.fields[6]
+            self.requires = self.fields[7]
         for item, line in zip(text, self.fields):
             self.data.append(item + line)
         self.choose()
+
+    def __infoFileData(self, text):
+        """read data for <application>.info file if exist
+        """
+        if os.path.isfile(self.pwd + self.filename):
+            with open(self.pwd + self.filename, "r") as info:
+                for line in info:
+                    fd = line.split("=")[1].strip()
+                    if line.startswith(text[1]):
+                        self.version = fd
+                    if line.startswith(text[2]):
+                        self.homepage = fd
+                    if line.startswith(text[3]):
+                        self.download = fd
+                    if line.startswith(text[4]):
+                        self.md5sum = fd
+                    if line.startswith(text[5]):
+                        self.download_x86_64 = fd
+                    if line.startswith(text[6]):
+                        self.md5sum_x86_64 = fd
+                    if line.startswith(text[7]):
+                        self.requires = fd
 
     def desktopFile(self):
         """<application>.desktop file handler
@@ -332,23 +385,27 @@ class SBoTemplates(object):
         """doinst.sh handler file
         """
         temp = "\n".join(doinst_sh_template)
-        pydoc.pager(temp)
+        pydoc.pipepager(temp, cmd='less -R')
         self.filename = "doinst.sh"
         self.touch()
         self.code, text = self.d.editbox(self.filename, height=30, width=90,
-                                         title=self.filename)
+                                         title="TEXT EDITOR: {0}".format(
+                                             self.filename))
         text = text.strip()
         if text:
             self.data = text.splitlines()
             self.d.scrollbox(text, height=len(self.data), width=0,
                              title="PREVIEW: {0}".format(self.filename))
+        else:
+            os.remove(self.pwd + self.filename)
         self.choose()
 
     def README(self):
         """README handler file
         """
         self.filename = "README"
-        self.touch()
+        if not os.path.isfile(self.pwd + self.filename):
+            self.touch()
         if self.slack_desc_text:
             yesno = self.d.yesno("Import text from <slack-desc> file ?")
             if yesno == "ok":
@@ -363,6 +420,9 @@ class SBoTemplates(object):
             self.data = text.splitlines()
             self.d.scrollbox(text, height=len(self.data), width=0,
                              title="PREVIEW: {0}".format(self.filename))
+
+        elif os.path.getsize(self.pwd + self.filename) == 0:
+            os.remove(self.pwd + self.filename)
         self.choose()
 
     def mixedform(self):
