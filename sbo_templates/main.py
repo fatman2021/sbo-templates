@@ -27,8 +27,8 @@ import sys
 import pydoc
 import locale
 from dialog import Dialog
-from __metadata__ import __version__
 from templates import Templates
+from __metadata__ import __version__
 
 
 locale.setlocale(locale.LC_ALL, '')
@@ -350,19 +350,19 @@ class SBoTemplates(object):
                 for line in info:
                     fd = line.split("=")[1].strip()
                     if line.startswith(text[1]):
-                        self.version = fd
+                        self._version = fd
                     if line.startswith(text[2]):
-                        self.homepage = fd
+                        self._homepage = fd
                     if line.startswith(text[3]):
-                        self.download = fd
+                        self._download = fd
                     if line.startswith(text[4]):
-                        self.md5sum = fd
+                        self._md5sum = fd
                     if line.startswith(text[5]):
-                        self.download_x86_64 = fd
+                        self._download_x86_64 = fd
                     if line.startswith(text[6]):
-                        self.md5sum_x86_64 = fd
+                        self._md5sum_x86_64 = fd
                     if line.startswith(text[7]):
-                        self.requires = fd
+                        self._requires = fd
 
     def desktopFile(self):
         """<application>.desktop file handler
