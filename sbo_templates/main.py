@@ -277,7 +277,8 @@ class SBoTemplates(object):
                     if line_count > 8 and line_count < 20:
                         self.slack_desc_data.append(
                             line[len(self.app) + 1:].rstrip())
-        print self.slack_desc_data
+        else:
+            self.slack_desc_data = [""] * 11
 
     def infoFile(self):
         """<application>.info file handler
@@ -387,8 +388,10 @@ class SBoTemplates(object):
         temp = "\n".join(doinst_sh_template)
         pydoc.pipepager(temp, cmd='less -R')
         self.filename = "doinst.sh"
-        self.touch()
-        self.code, text = self.d.editbox(self.filename, height=30, width=90,
+        if not os.path.isfile(self.pwd + self.filename):
+            self.touch()
+        self.code, text = self.d.editbox(self.pwd + self.filename, height=30,
+                                         width=90,
                                          title="TEXT EDITOR: {0}".format(
                                              self.filename))
         text = text.strip()
@@ -396,7 +399,7 @@ class SBoTemplates(object):
             self.data = text.splitlines()
             self.d.scrollbox(text, height=len(self.data), width=0,
                              title="PREVIEW: {0}".format(self.filename))
-        else:
+        elif os.path.getsize(self.pwd + self.filename) == 0:
             os.remove(self.pwd + self.filename)
         self.choose()
 
@@ -413,8 +416,8 @@ class SBoTemplates(object):
                 self.write()
             else:
                 self.touch()
-        self.code, text = self.d.editbox(self.filename, height=30, width=90,
-                                         title=self.filename)
+        self.code, text = self.d.editbox(self.pwd + self.filename, height=30,
+                                         width=90, title=self.filename)
         text = text.strip()
         if text:
             self.data = text.splitlines()
