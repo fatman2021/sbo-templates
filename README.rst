@@ -101,6 +101,10 @@ Screenshots
 .. image:: https://raw.githubusercontent.com/dslackw/images/master/sbo-templates/sbo-templates-4.png
     :target: https://github.com/dslackw/sbo-templates
 
+ 
+.. image:: https://raw.githubusercontent.com/dslackw/images/master/sbo-templates/sbo-templates-5.png
+    :target: https://github.com/dslackw/sbo-templates
+
 
 Copyright 
 ---------
