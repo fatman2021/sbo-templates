@@ -259,11 +259,13 @@ class SBoTemplates(object):
         field_length = 70
         input_length = 70
         attributes = '0x0'
+        self.elements = []
         self.__slackDeskRead()
-        self.elements = [
-            ("{0}:".format(self.app), 1, 1, ' {0} ()'.format(self.app), 1,
-             len(self.app) + 2, field_length, input_length, attributes)
-        ]
+        if not self.slack_desc_data[0]:     # check description
+            self.elements = [
+                ("{0}:".format(self.app), 1, 1, ' {0} ()'.format(self.app), 1,
+                 len(self.app) + 2, field_length, input_length, attributes)
+            ]
         for i, line in zip(range(2, 12), self.slack_desc_data):
             self.elements += [("{0}:".format(self.app), i, 1, line, i,
                                len(self.app) + 2, field_length, input_length,
