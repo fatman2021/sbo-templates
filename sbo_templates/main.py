@@ -27,7 +27,7 @@ import sys
 import pydoc
 import locale
 from dialog import Dialog
-from templates import Templates
+from templates import doinst
 from __metadata__ import __version__
 
 
@@ -46,7 +46,6 @@ class SBoTemplates(object):
         self.args.pop(0)
         self.__cli()
 
-        self.temp = Templates()
         self.pwd = ""
         self.slack_desc_text = []
         self.slack_desc_data = []
@@ -439,7 +438,7 @@ class SBoTemplates(object):
     def doinst_sh(self):
         """doinst.sh handler file
         """
-        temp = "\n".join(self.temp.doinst_sh())
+        temp = "\n".join(doinst.splitlines())
         pydoc.pipepager(temp, cmd='less -R')
         self.filename = "doinst.sh"
         if not os.path.isfile(self.pwd + self.filename):
