@@ -26,6 +26,7 @@ import os
 import sys
 import pydoc
 import locale
+import subprocess
 from dialog import Dialog
 from templates import doinst
 from __metadata__ import __version__
@@ -438,23 +439,12 @@ class SBoTemplates(object):
     def doinst_sh(self):
         """doinst.sh handler file
         """
+        os.system("clear")
         temp = "\n".join(doinst.splitlines())
         pydoc.pipepager(temp, cmd='less -R')
         self.filename = "doinst.sh"
-        if not os.path.isfile(self.pwd + self.filename):
-            self.touch()
-        self.code, text = self.d.editbox(self.pwd + self.filename, height=30,
-                                         width=90,
-                                         title="TEXT EDITOR: {0}".format(
-                                             self.filename))
-        text = text.strip()
-        if text:
-            self.data = text.splitlines()
-            self.d.scrollbox(text, height=len(self.data), width=0,
-                             title="PREVIEW: {0}".format(self.filename))
-        elif os.path.getsize(self.pwd + self.filename) == 0:
-            os.remove(self.pwd + self.filename)
-        self.choose()
+        subprocess.call(["nano", self.filename])
+        self.menu()
 
     def README(self):
         """README handler file
