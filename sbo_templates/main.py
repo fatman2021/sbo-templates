@@ -45,6 +45,7 @@ class SBoTemplates(object):
 
         self.args = sys.argv
         self.args.pop(0)
+        self.editor = "nano"
         self.__cli()
 
         self.pwd = ""
@@ -116,15 +117,16 @@ class SBoTemplates(object):
         self.filename = "{0}.sbo-maintainer".format(self.HOME)
         self.__maintainerInit()
         self.choises = [
-            ("1 Info", "Create {0}.info file".format(self.app)),
-            ("2 Slack desc", "Create slack-desc file"),
-            ("3 Desktop", "Create {0}.desktop file".format(self.app)),
-            ("4 Doinst.sh", "Create doinst.sh script"),
-            ("5 README", "Create README file"),
-            ("6 Maintainer", "Maintainer data"),
-            ("7 Directory", "Change directory"),
-            ("8 Help", "Where to get help"),
-            ("0 Exit", "Exit the program")
+            ("Info", "Create {0}.info file".format(self.app)),
+            ("Slack desc", "Create slack-desc file"),
+            ("Desktop", "Create {0}.desktop file".format(self.app)),
+            ("Doinst.sh", "Create doinst.sh script"),
+            ("SlackBuild", "Create {0}.SlackBuild script".format(self.app)),
+            ("README", "Create README file"),
+            ("Maintainer", "Maintainer data"),
+            ("Directory", "Change directory"),
+            ("Help", "Where to get help"),
+            ("Exit", "Exit the program")
         ]
 
     def __maintainerInit(self):
@@ -138,6 +140,8 @@ class SBoTemplates(object):
                         self.maintainer = line.split("=")[1]
                     if line.startswith("EMAIL"):
                         self.email = line.split("=")[1]
+                    if line.startswith("EDITOR"):
+                        self.editor = line.split("=")[1]
 
     def menu(self):
         """Dialog.menu(text, height=None, width=None, menu_height=None,
@@ -152,22 +156,18 @@ class SBoTemplates(object):
         if code == self.d.CANCEL or code == self.d.ESC or tag[0] == "0":
             os.system("clear")
             sys.exit(0)
-        if tag[0] == "1":
-            self.infoFile()
-        elif tag[0] == "2":
-            self.slackDesc()
-        elif tag[0] == "3":
-            self.desktopFile()
-        elif tag[0] == "4":
-            self.doinst_sh()
-        elif tag[0] == "5":
-            self.README()
-        elif tag[0] == "6":
-            self.maintainerData()
-        elif tag[0] == "7":
-            self.__updateDirectory()
-        elif tag[0] == "8":
-            self.getHelp()
+        case = {
+            "Info": self.infoFile,
+            "Slack desc": self.slackDesc,
+            "Desktop": self.desktopFile,
+            "Doinst.sh": self.doinst_sh,
+            "SlackBuild": self.SlackBuild,
+            "README": self.README,
+            "Maintainer": self.maintainerData,
+            "Directory": self.__updateDirectory,
+            "Help": self.getHelp,
+        }
+        case[tag]()
 
     def getHelp(self):
         """get help from slackbuilds.org
@@ -214,22 +214,24 @@ class SBoTemplates(object):
         field_length = 90
         input_length = 90
         attributes = '0x0'
-        text = ["MAINTAINER=", "EMAIL="]
+        text = ["MAINTAINER=", "EMAIL=", "EDITOR="]
         self.elements = [
             (text[0], 1, 1, self.maintainer, 1, 12, field_length, input_length,
              attributes),
             (text[1], 2, 1, self.email, 2, 7, field_length, input_length,
+             attributes),
+            (text[1], 3, 1, self.editor, 3, 7, field_length, input_length,
              attributes)
         ]
         self.mixedform()
         if self.fields:
             self.maintainer = self.fields[0]
             self.email = self.fields[1]
+            self.editor = self.fields[2]
         for item, line in zip(text, self.fields):
             self.data.append(item + line)
         self.choose()
         self.pwd = cache_dir
-        print self.pwd
 
     def __slackDescComments(self):
         """slack-desc file comments
@@ -443,33 +445,25 @@ class SBoTemplates(object):
         temp = "\n".join(doinst.splitlines())
         pydoc.pipepager(temp, cmd='less -R')
         self.filename = "doinst.sh"
-        subprocess.call(["nano", self.filename])
+        subprocess.call([self.editor, self.filename])
         self.menu()
 
     def README(self):
         """README handler file
         """
         self.filename = "README"
-        if not os.path.isfile(self.pwd + self.filename):
-            self.touch()
         if self.slack_desc_text:
             yesno = self.d.yesno("Import text from <slack-desc> file ?")
             if yesno == "ok":
                 self.data = self.slack_desc_text
                 self.write()
-            else:
-                self.touch()
-        self.code, text = self.d.editbox(self.pwd + self.filename, height=30,
-                                         width=90, title=self.filename)
-        text = text.strip()
-        if text:
-            self.data = text.splitlines()
-            self.d.scrollbox(text, height=len(self.data), width=0,
-                             title="PREVIEW: {0}".format(self.filename))
+        subprocess.call([self.editor, self.filename])
 
-        elif os.path.getsize(self.pwd + self.filename) == 0:
-            os.remove(self.pwd + self.filename)
-        self.choose()
+        self.menu()
+
+    def SlackBuild(self):
+        pass
+
 
     def mixedform(self):
         """Dialog.mixedform(text, elements, height=0, width=0, form_height=0,
