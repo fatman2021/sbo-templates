@@ -462,8 +462,18 @@ class SBoTemplates(object):
         self.menu()
 
     def SlackBuild(self):
-        pass
-
+        self.filename = "{0}.SlackBuild".format(self.app)
+        height = 20
+        width = 80
+        choices = [
+            ("autotools-template", "autotools-template.SlackBuild", False),
+            ("cmake-template", "cmake-template.SlackBuild", False),
+            ("perl-template", "perl-template.SlackBuild", False),
+            ("python-template", "python-template.SlackBuild", False),
+            ("rubygem-template", "rubygem-template.SlackBuild", False)
+        ]
+        self.d.radiolist("{0}".format(self.filename), height, width,
+                         list_height=0, choices=choices)
 
     def mixedform(self):
         """Dialog.mixedform(text, elements, height=0, width=0, form_height=0,
