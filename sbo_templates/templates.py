@@ -99,13 +99,22 @@ fi
 """ % (cl, cl, cl, cl, cl)
 
 
+class SlackBuilds(object):
 
-autotools_template = """
+    def __init__(self, app_name, version, year, maint_name, live):
+        self.app_name = app_name
+        self.version = version
+        self.year = year
+        self.maint_name = maint_name
+        self.live = live
+
+    def autotools(self):
+        autotools_template = """
 #!/bin/sh
 
-# Slackware build script for <appname>
+# Slackware build script for %s
 
-# Copyright <year> <you> <where you live>
+# Copyright %s %s %s
 # All rights reserved.
 #
 # Redistribution and use of this script, with or without modification, is
@@ -125,17 +134,17 @@ autotools_template = """
 #  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-PRGNAM=appname
-VERSION=${VERSION:-1.4.1}
+PRGNAM=%s
+VERSION=${VERSION:-%s}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
 
 if [ -z "$ARCH" ]; then
-  case "$( uname -m )" in
+case "$( uname -m )" in
     i?86) ARCH=i486 ;;
     arm*) ARCH=arm ;;
-       *) ARCH=$( uname -m ) ;;
-  esac
+    *) ARCH=$( uname -m ) ;;
+esac
 fi
 
 CWD=$(pwd)
@@ -144,17 +153,17 @@ PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}
 
 if [ "$ARCH" = "i486" ]; then
-  SLKCFLAGS="-O2 -march=i486 -mtune=i686"
-  LIBDIRSUFFIX=""
+SLKCFLAGS="-O2 -march=i486 -mtune=i686"
+LIBDIRSUFFIX=""
 elif [ "$ARCH" = "i686" ]; then
-  SLKCFLAGS="-O2 -march=i686 -mtune=i686"
-  LIBDIRSUFFIX=""
+SLKCFLAGS="-O2 -march=i686 -mtune=i686"
+LIBDIRSUFFIX=""
 elif [ "$ARCH" = "x86_64" ]; then
-  SLKCFLAGS="-O2 -fPIC"
-  LIBDIRSUFFIX="64"
+SLKCFLAGS="-O2 -fPIC"
+LIBDIRSUFFIX="64"
 else
-  SLKCFLAGS="-O2"
-  LIBDIRSUFFIX=""
+SLKCFLAGS="-O2"
+LIBDIRSUFFIX=""
 fi
 
 set -e
@@ -167,27 +176,27 @@ tar xvf $CWD/$PRGNAM-$VERSION.tar.gz
 cd $PRGNAM-$VERSION
 chown -R root:root .
 find -L . \\
- \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \\
-  -o -perm 511 \) -exec chmod 755 {} \; -o \\
- \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \\
-  -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \\;
+\( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \\
+-o -perm 511 \) -exec chmod 755 {} \; -o \\
+\( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \\
+-o -perm 440 -o -perm 400 \) -exec chmod 644 {} \\;
 
 CFLAGS="$SLKCFLAGS" \\
 CXXFLAGS="$SLKCFLAGS" \\
 ./configure \\
-  --prefix=/usr \\
-  --libdir=/usr/lib${LIBDIRSUFFIX} \\
-  --sysconfdir=/etc \\
-  --localstatedir=/var \\
-  --mandir=/usr/man \\
-  --docdir=/usr/doc/$PRGNAM-$VERSION \\
-  --build=$ARCH-slackware-linux
+--prefix=/usr \\
+--libdir=/usr/lib${LIBDIRSUFFIX} \\
+--sysconfdir=/etc \\
+--localstatedir=/var \\
+--mandir=/usr/man \\
+--docdir=/usr/doc/$PRGNAM-$VERSION \\
+--build=$ARCH-slackware-linux
 
 make
 make install DESTDIR=$PKG
 
 find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \\
-  | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
+| cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
 
 find $PKG/usr/man -type f -exec gzip -9 {} \\;
 for i in $( find $PKG/usr/man -type l ) ; do ln -s $( readlink $i ).gz $i.gz ; rm $i ; done
@@ -196,14 +205,14 @@ rm -f $PKG/usr/info/dir
 gzip -9 $PKG/usr/info/*.info*
 
 find $PKG -name perllocal.pod \\
-  -o -name ".packlist" \
-  -o -name "*.bs" \\
-  | xargs rm -f
+-o -name ".packlist" \
+-o -name "*.bs" \\
+| xargs rm -f
 
 mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
 cp -a \\
-  <documentation> \\
-  $PKG/usr/doc/$PRGNAM-$VERSION
+<documentation> \\
+$PKG/usr/doc/$PRGNAM-$VERSION
 cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
 
 mkdir -p $PKG/install
@@ -212,6 +221,6 @@ cat $CWD/doinst.sh > $PKG/install/doinst.sh
 
 cd $PKG
 /sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.${PKGTYPE:-tgz}
-"""
-
-print autotools_template
+""" % (self.app_name, self.year, self.maint_name, self.live, self.app_name,
+       self.version)
+        return autotools_template

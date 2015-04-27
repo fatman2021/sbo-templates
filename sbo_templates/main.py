@@ -27,8 +27,12 @@ import sys
 import pydoc
 import locale
 import subprocess
+from datetime import date
 from dialog import Dialog
-from templates import doinst
+from templates import (
+    SlackBuilds,
+    doinst
+)
 from __metadata__ import __version__
 
 
@@ -39,13 +43,13 @@ class SBoTemplates(object):
     """SlackBuild Templates Class
     """
     def __init__(self):
+        self.year = date.today().year
         self.d = Dialog(dialog="dialog")
         self.d.set_background_title("SlackBuild.org Templates {0}".format(
             __version__))
 
         self.args = sys.argv
         self.args.pop(0)
-        self.editor = "nano"
         self.__cli()
 
         self.pwd = ""
@@ -79,7 +83,7 @@ class SBoTemplates(object):
         elif len(self.args) == 1 and self.args[0] == "--version":
             self.__version()
         elif len(self.args) < 1:
-            self.args = ['application']
+            self.args = ['appname']
 
     def __version(self):
         """version info
@@ -113,6 +117,8 @@ class SBoTemplates(object):
         self.__slackDescComments()
         self.maintainer = ""
         self.email = ""
+        self.live = ""
+        self.editor = "nano"
         self.HOME = os.getenv("HOME") + "/"
         self.filename = "{0}.sbo-maintainer".format(self.HOME)
         self.__maintainerInit()
@@ -140,6 +146,8 @@ class SBoTemplates(object):
                         self.maintainer = line.split("=")[1]
                     if line.startswith("EMAIL"):
                         self.email = line.split("=")[1]
+                    if line.startswith("LIVE"):
+                        self.live = line.split("=")[1]
                     if line.startswith("EDITOR"):
                         self.editor = line.split("=")[1]
 
@@ -214,20 +222,23 @@ class SBoTemplates(object):
         field_length = 90
         input_length = 90
         attributes = '0x0'
-        text = ["MAINTAINER=", "EMAIL=", "EDITOR="]
+        text = ["MAINTAINER=", "EMAIL=", "LIVE=", "EDITOR="]
         self.elements = [
             (text[0], 1, 1, self.maintainer, 1, 12, field_length, input_length,
              attributes),
             (text[1], 2, 1, self.email, 2, 7, field_length, input_length,
              attributes),
-            (text[1], 3, 1, self.editor, 3, 7, field_length, input_length,
+            (text[2], 3, 1, self.live, 3, 6, field_length, input_length,
+             attributes),
+            (text[3], 4, 1, self.editor, 4, 8, field_length, input_length,
              attributes)
         ]
         self.mixedform()
         if self.fields:
             self.maintainer = self.fields[0]
             self.email = self.fields[1]
-            self.editor = self.fields[2]
+            self.live = self.fields[2]
+            self.editor = self.fields[3]
         for item, line in zip(text, self.fields):
             self.data.append(item + line)
         self.choose()
@@ -445,7 +456,7 @@ class SBoTemplates(object):
         temp = "\n".join(doinst.splitlines())
         pydoc.pipepager(temp, cmd='less -R')
         self.filename = "doinst.sh"
-        subprocess.call([self.editor, self.filename])
+        self.edit()
         self.menu()
 
     def README(self):
@@ -457,12 +468,14 @@ class SBoTemplates(object):
             if yesno == "ok":
                 self.data = self.slack_desc_text
                 self.write()
-        subprocess.call([self.editor, self.filename])
-
+        self.edit()
         self.menu()
 
     def SlackBuild(self):
+        """SlackBuild handler file
+        """
         self.filename = "{0}.SlackBuild".format(self.app)
+        version = self._version.replace('"', '')
         height = 20
         width = 80
         choices = [
@@ -472,8 +485,15 @@ class SBoTemplates(object):
             ("python-template", "python-template.SlackBuild", False),
             ("rubygem-template", "rubygem-template.SlackBuild", False)
         ]
-        self.d.radiolist("{0}".format(self.filename), height, width,
-                         list_height=0, choices=choices)
+        code, tag = self.d.radiolist("{0}".format(self.filename), height, width,
+                                     list_height=0, choices=choices)
+        if tag == "autotools-template":
+            self.data = SlackBuilds(
+                self.app, version, self.year, self.maintainer,
+                self.live).autotools().splitlines()
+            self.write()
+        self.edit()
+        self.menu()
 
     def mixedform(self):
         """Dialog.mixedform(text, elements, height=0, width=0, form_height=0,
@@ -482,6 +502,11 @@ class SBoTemplates(object):
         """
         self.code, self.fields = self.d.mixedform(self.comments, self.elements,
                                                   self.height, self.width)
+
+    def edit(self):
+        """editor handler
+        """
+        subprocess.call([self.editor, self.filename])
 
     def messageBox(self):
         """view messages
