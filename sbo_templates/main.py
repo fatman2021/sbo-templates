@@ -464,7 +464,7 @@ class SBoTemplates(object):
         """
         self.filename = "README"
         if self.slack_desc_text:
-            yesno = self.d.yesno("Import text from <slack-desc> file ?")
+            yesno = self.d.yesno("Import description from <slack-desc> file ?")
             if yesno == "ok":
                 self.data = self.slack_desc_text
                 self.write()
@@ -474,24 +474,32 @@ class SBoTemplates(object):
     def SlackBuild(self):
         """SlackBuild handler file
         """
+        self.filename = "{0}.info".format(self.app)
+        text = ["x", "VERSION="] + (["x"] * 6)
+        self.__infoFileRead(text)   # get version for .info file
         self.filename = "{0}.SlackBuild".format(self.app)
-        version = self._version.replace('"', '')
-        height = 20
-        width = 80
-        choices = [
-            ("autotools-template", "autotools-template.SlackBuild", False),
-            ("cmake-template", "cmake-template.SlackBuild", False),
-            ("perl-template", "perl-template.SlackBuild", False),
-            ("python-template", "python-template.SlackBuild", False),
-            ("rubygem-template", "rubygem-template.SlackBuild", False)
-        ]
-        code, tag = self.d.radiolist("{0}".format(self.filename), height, width,
-                                     list_height=0, choices=choices)
-        if tag == "autotools-template":
-            self.data = SlackBuilds(
-                self.app, version, self.year, self.maintainer,
-                self.live).autotools().splitlines()
-            self.write()
+        if not os.path.isfile(self.filename):
+            version = self._version.replace('"', '')
+            height = 20
+            width = 80
+            choices = [
+                ("autotools-template", "autotools-template.SlackBuild", False),
+                ("cmake-template", "cmake-template.SlackBuild", False),
+                ("perl-template", "perl-template.SlackBuild", False),
+                ("python-template", "python-template.SlackBuild", False),
+                ("rubygem-template", "rubygem-template.SlackBuild", False)
+            ]
+            code, tag = self.d.radiolist("{0}".format(self.filename), height,
+                                         width, list_height=0, choices=choices)
+            self.height = 7
+            self.width = 70
+            self.msg = "{0} script created.".format(self.filename)
+            if tag == "autotools-template":
+                self.data = SlackBuilds(
+                    self.app, version, self.year, self.maintainer,
+                    self.live).autotools().splitlines()
+                self.write()
+                self.messageBox()
         self.edit()
         self.menu()
 

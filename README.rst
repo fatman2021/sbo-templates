@@ -42,6 +42,10 @@ Features
 - Create fast and safe templates.
 - Reading existing files templates for editing.
 - Repairs wrong templates.
+- Select editor for working (dafault is 'nano').
+- Auto-import data from .info file 
+  (such as maintainer name, appllication name, version etc.)
+
 
 Install
 -------
