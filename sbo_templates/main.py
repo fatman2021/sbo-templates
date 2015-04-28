@@ -55,7 +55,7 @@ class SBoTemplates(object):
         self.pwd = ""
         self.slack_desc_text = []
         self.slack_desc_data = []
-        # <application>.info
+        # appname.info
         self._version = '""'
         self._homepage = '""'
         self._download = '""'
@@ -63,7 +63,7 @@ class SBoTemplates(object):
         self._download_x86_64 = '""'
         self._md5sum_x86_64 = '""'
         self._requires = '""'
-        # <application>.desktop
+        # appname.desktop
         self._name = self.args[0]
         self._comment = ""
         self._exec = "/usr/bin/{0}".format(self.args[0])
@@ -124,11 +124,11 @@ class SBoTemplates(object):
         self.__maintainerInit()
         self.choises = [
             ("Info", "Create {0}.info file".format(self.app)),
-            ("Slack desc", "Create slack-desc file"),
+            ("README", "Create README file"),
             ("Desktop", "Create {0}.desktop file".format(self.app)),
             ("Doinst.sh", "Create doinst.sh script"),
+            ("Slack desc", "Create slack-desc file"),
             ("SlackBuild", "Create {0}.SlackBuild script".format(self.app)),
-            ("README", "Create README file"),
             ("Maintainer", "Maintainer data"),
             ("Directory", "Change directory"),
             ("Help", "Where to get help"),
@@ -215,9 +215,11 @@ class SBoTemplates(object):
         """
         cache_dir = self.pwd
         self.pwd = ""
+        self.height = 15
         self.filename = "{0}.sbo-maintainer".format(self.HOME)
         print self.pwd
-        self.comments = self.filename
+        self.comments = ("Enter the details of the maintainer and change "
+                         "editor, \ndefault is 'nano'.")
         self.width = 90
         field_length = 90
         input_length = 90
@@ -491,13 +493,37 @@ class SBoTemplates(object):
             ]
             code, tag = self.d.radiolist("{0}".format(self.filename), height,
                                          width, list_height=0, choices=choices)
-            self.height = 7
-            self.width = 70
             self.msg = "{0} script created.".format(self.filename)
+            self.height = 7
+            self.width = len(self.msg) + 4
             if tag == "autotools-template":
                 self.data = SlackBuilds(
                     self.app, version, self.year, self.maintainer,
                     self.live).autotools().splitlines()
+                self.write()
+                self.messageBox()
+            elif tag == "cmake-template":
+                self.data = SlackBuilds(
+                    self.app, version, self.year, self.maintainer,
+                    self.live).cmake().splitlines()
+                self.write()
+                self.messageBox()
+            elif tag == "perl-template":
+                self.data = SlackBuilds(
+                    self.app, version, self.year, self.maintainer,
+                    self.live).perl().splitlines()
+                self.write()
+                self.messageBox()
+            elif tag == "python-template":
+                self.data = SlackBuilds(
+                    self.app, version, self.year, self.maintainer,
+                    self.live).python().splitlines()
+                self.write()
+                self.messageBox()
+            elif tag == "rubygem-template":
+                self.data = SlackBuilds(
+                    self.app, version, self.year, self.maintainer,
+                    self.live).rubygem().splitlines()
                 self.write()
                 self.messageBox()
         self.edit()
