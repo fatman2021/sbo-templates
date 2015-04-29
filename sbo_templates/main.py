@@ -492,7 +492,7 @@ class SBoTemplates(object):
         text = ["x", "VERSION="] + (["x"] * 6)
         self.__infoFileRead(text)   # get version for .info file
         self.filename = "{0}.SlackBuild".format(self.app)
-        if not os.path.isfile(self.filename):
+        if not os.path.isfile(self.pwd + self.filename):
             version = self._version.replace('"', '')
             height = 20
             width = 80
@@ -552,7 +552,7 @@ class SBoTemplates(object):
     def edit(self):
         """editor handler
         """
-        subprocess.call([self.editor, self.filename])
+        subprocess.call([self.editor, self.pwd + self.filename])
 
     def messageBox(self):
         """view messages
@@ -594,6 +594,7 @@ class SBoTemplates(object):
                 if self.chk_md5 != hashlib.md5(data).hexdigest():
                     self.msg = "MD5SUM check for {0} FAILED".format(self.source)
                     self.messageBox()
+            self.infoFile()
 
     def touch(self):
         """create empty file

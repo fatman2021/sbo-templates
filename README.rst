@@ -45,7 +45,7 @@ Features
 - Select editor for working (dafault is 'nano').
 - Auto-import data from .info file 
   (such as maintainer name, appllication name, version etc.)
-
+- Warning for failed checksum.
 
 Install
 -------
