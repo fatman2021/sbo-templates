@@ -26,6 +26,7 @@ import os
 import sys
 import pydoc
 import locale
+import hashlib
 import subprocess
 from datetime import date
 from dialog import Dialog
@@ -52,6 +53,8 @@ class SBoTemplates(object):
         self.args.pop(0)
         self.__cli()
 
+        self.source = ""
+        self.chk_md5 = ""
         self.pwd = ""
         self.slack_desc_text = []
         self.slack_desc_data = []
@@ -353,8 +356,17 @@ class SBoTemplates(object):
             self._homepage = self.fields[2]
             self._download = self.fields[3]
             self._md5sum = self.fields[4]
+            if self._download:
+                self.source = self._download.replace('"', '').split("/")[-1]
+                self.chk_md5 = self._md5sum
+                self.checksum()
             self._download_x86_64 = self.fields[5]
             self._md5sum_x86_64 = self.fields[6]
+            if self._download_x86_64:
+                self.source = self._download_x86_64.replace(
+                    '"', '').split("/")[-1]
+                self.chk_md5 = self._md5sum_x86_64
+                self.checksum()
             self._requires = self.fields[7]
         for item, line in zip(text, self.fields):
             self.data.append(item + line)
@@ -569,6 +581,19 @@ class SBoTemplates(object):
             self.msg = "File {0} modified.".format(self.filename)
         else:
             self.msg = "File {0} is created.".format(self.filename)
+
+    def checksum(self):
+        """checksum sources
+        """
+        self.height = 7
+        self.width = 90
+        self.chk_md5 = "".join(self.chk_md5.replace('"', ''))
+        if os.path.isfile(self.pwd + self.source):
+            with open(self.pwd + self.source) as f:
+                data = f.read()
+                if self.chk_md5 != hashlib.md5(data).hexdigest():
+                    self.msg = "MD5SUM check for {0} FAILED".format(self.source)
+                    self.messageBox()
 
     def touch(self):
         """create empty file
