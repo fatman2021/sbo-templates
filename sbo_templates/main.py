@@ -177,8 +177,13 @@ class SBoTemplates(object):
             "Maintainer": self.maintainerData,
             "Directory": self.__updateDirectory,
             "Help": self.getHelp,
+            "Exit": self.exit,
         }
         case[tag]()
+
+    def exit(self):
+        os.system("clear")
+        sys.exit(0)
 
     def getHelp(self):
         """get help from slackbuilds.org
@@ -220,7 +225,6 @@ class SBoTemplates(object):
         self.pwd = ""
         self.height = 15
         self.filename = "{0}.sbo-maintainer".format(self.HOME)
-        print self.pwd
         self.comments = ("Enter the details of the maintainer and change "
                          "editor, \ndefault is 'nano'.")
         self.width = 90
